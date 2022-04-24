@@ -1,13 +1,15 @@
 package com.scprojekt.infrastructure.repositories;
 
-import com.scprojekt.domain.model.user.UserRepository;
 import com.scprojekt.domain.model.user.User;
+import com.scprojekt.domain.model.user.UserRepository;
 import com.scprojekt.domain.model.user.UserType;
+import io.quarkus.hibernate.orm.PersistenceUnit;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +17,8 @@ import java.util.UUID;
 public class InfrastructureUserRepository implements UserRepository {
 
     @Inject
-    private EntityManager em;
+    @PersistenceUnit("users")
+    EntityManager em;
 
     @Override
     public List<User> findAll() {
@@ -46,7 +49,7 @@ public class InfrastructureUserRepository implements UserRepository {
 
     @Override
     public User findByUUID(UUID uuid) {
-        Query query = em.createQuery(" SELECT u from User u WHERE u.userNumber := usernumber");
+        Query query = em.createQuery(" SELECT u from User u WHERE u.userNumber.uuid = :usernumber");
         query.setParameter("usernumber", uuid);
         return (User) query.getSingleResult();
     }

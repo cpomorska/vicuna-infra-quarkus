@@ -6,4 +6,5 @@ module vicuna.infra.quarkus {
     requires jakarta.inject.api;
     requires jakarta.enterprise.cdi.api;
     requires quarkus.hibernate.orm;
+    requires jakarta.persistence;
 }

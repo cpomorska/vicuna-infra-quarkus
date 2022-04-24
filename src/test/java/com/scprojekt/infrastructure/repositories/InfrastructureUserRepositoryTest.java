@@ -3,39 +3,39 @@ package com.scprojekt.infrastructure.repositories;
 import com.scprojekt.domain.model.user.User;
 import com.scprojekt.domain.model.user.UserNumber;
 import com.scprojekt.domain.model.user.UserType;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import javax.transaction.TransactionScoped;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
-public class InfrastructureUserRepositoryTest {
-
-    @Inject
-    protected EntityManager em;
+@QuarkusTestResource(H2DatabaseTestResource.class)
+@TransactionScoped
+class InfrastructureUserRepositoryTest {
 
     @Inject
     private InfrastructureUserRepository infrastructureUserRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         User user = createTestUser();
         infrastructureUserRepository.createEntity(user);
     }
 
-
     @Test
     @Transactional
-    public void findAll() {
+    void findAll() {
         List<User> result = infrastructureUserRepository.findAll();
         assertNotNull(result);
         assertEquals("Testuser",result.get(0).getUserName());
@@ -43,7 +43,7 @@ public class InfrastructureUserRepositoryTest {
     }
 
     @Test
-    public void createUser() {
+    void createUser() {
         UUID uuid1 = UUID.fromString("35fa10da-594a-4601-a7b7-0a707a3c1ce7");
         User user1 = createTestUser();
         user1.setUserName("Insertuser");
@@ -53,7 +53,7 @@ public class InfrastructureUserRepositoryTest {
         List<User> result = infrastructureUserRepository.findAll();
         assertNotNull(result);
         assertEquals(2,result.size());
-        assertEquals(uuid1, result.get(1).getUserNumber());
+        assertEquals(uuid1, result.get(1).getUserNumber().getUuid());
         assertEquals("Insertuser",result.get(1).getUserName());
     }
 
